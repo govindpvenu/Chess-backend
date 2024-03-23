@@ -2,6 +2,7 @@ import { Document, Schema, model, Model, InferSchemaType } from "mongoose"
 import bcrypt from "bcryptjs"
 
 interface UserDocument extends Document {
+    googleId?: string
     username: string
     email: string
     password: string
@@ -12,17 +13,18 @@ interface UserDocument extends Document {
 
 const userSchema = new Schema<UserDocument>(
     {
+        googleId: {
+            type: String,
+        },
         username: {
             type: String,
             required: true,
-            validate: {
-                validator: (value: string) => value.length >= 3,
-                message: "Username must have at least 3 characters",
-            },
+            minlength: [3, "Username must be 3 characters"],
         },
         email: {
             type: String,
             required: true,
+            unique: true,
             validate: {
                 validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
                 message: "Invalid email format",
@@ -30,7 +32,7 @@ const userSchema = new Schema<UserDocument>(
         },
         password: {
             type: String,
-            required: true,
+            // required: true,
             validate: {
                 validator: (value: string) => value.length >= 8,
                 message: "Password must have at least 8 characters",

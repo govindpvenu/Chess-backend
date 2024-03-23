@@ -26,7 +26,7 @@ passport.use(
                 } else {
                     return done(null, false)
                 }
-            })  
+            })
             .catch((err: any) => {
                 return done(err, false)
             })
@@ -34,32 +34,3 @@ passport.use(
 )
 
 export const protect = passport.authenticate("jwt", { session: false })
-
-// import jwt from "jsonwebtoken"
-// import asyncHandler from "express-async-handler"
-// import User from "../models/userModel"
-// import env from "../utils/validateEnv"
-// import { Request, Response, NextFunction } from "express"
-
-// interface RequestWithUser extends Request {
-//   user?: any // Update this to match your User model or use UserDocument if possible
-// }
-
-// const protect = asyncHandler(async (req: RequestWithUser, res: Response, next: NextFunction) => {
-//   let token = req.cookies.user
-//   if (token) {
-//     try {
-//       const decoded = jwt.verify(token, env.JWT_SECRET)
-//       req.user = await User.findById(decoded.sub).select("-password")
-//       next()
-//     } catch (error) {
-//       res.status(401)
-//       throw new Error("Not authorized, invalid token")
-//     }
-//   } else {
-//     res.status(401)
-//     throw new Error("Not authorized, no token")
-//   }
-// })
-
-// export { protect }
