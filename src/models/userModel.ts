@@ -2,11 +2,17 @@ import { Document, Schema, model, Model, InferSchemaType } from "mongoose"
 import bcrypt from "bcryptjs"
 
 interface UserDocument extends Document {
+    _id: string
     googleId?: string
     username: string
     email: string
     password: string
+    profile?: string
     verified?: boolean
+    wins?: number
+    loss?: number
+    draw?: number
+    rating?: number
 
     matchPassword: (enteredPassword: string) => Promise<boolean>
 }
@@ -38,10 +44,31 @@ const userSchema = new Schema<UserDocument>(
                 message: "Password must have at least 8 characters",
             },
         },
+        profile:{
+            type: String,
+            default: ""
+        },
         verified: {
             type: Boolean,
             default: false,
         },
+        wins: {
+            type: Number,
+            default: 0,
+        },
+        draw: {
+            type: Number,
+            default: 0,
+        },
+        loss: {
+            type: Number,
+            default: 0,
+        },
+        rating: {
+            type: Number,
+            default: 0,
+        },
+
     },
     {
         timestamps: true,

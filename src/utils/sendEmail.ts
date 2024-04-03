@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer")
 
-const sendEmail = async (email: String, generatedOTP: number) => {
+const sendEmail = async (email: string, generatedOTP: number):Promise<void> => {
     try {
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
@@ -18,7 +18,6 @@ const sendEmail = async (email: String, generatedOTP: number) => {
             subject: "Otp for registration is: ",
             html: "<h3>OTP for account verification is </h3>" + "<h1 style='font-weight:bold;'>" + generatedOTP + "</h1>",
         }
-
         await transporter.sendMail(mailOptions)
     } catch (error) {
         console.error(error)

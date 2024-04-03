@@ -22,6 +22,7 @@ passport.use(
         User.findOne({ _id: jwt_payload.sub })
             .then((user: any) => {
                 if (user) {
+                    // req.user = user
                     return done(null, user)
                 } else {
                     return done(null, false)

@@ -12,7 +12,13 @@ import "dotenv/config"
 import env from "./utils/validateEnv"
 import connectDB from "./config/db"
 import passport from "passport"
+
+import authRoutes from "./routes/authRoutes"
 import userRoutes from "./routes/userRoutes"
+import messageRoutes from "./routes/messageRoutes"
+import gameRoutes from "./routes/gameRoutes"
+
+
 import { notFound, errorHandler } from "./middlewares/errorHandler"
 require("./config/googleAuth")
 
@@ -137,7 +143,11 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use("/api/auth", authRoutes)
 app.use("/api/user", userRoutes)
+app.use("/api/game", gameRoutes)
+app.use("/api/messages", messageRoutes);
+
 app.get("/", (req, res) => res.send("Server is ready"))
 
 app.use(notFound)
