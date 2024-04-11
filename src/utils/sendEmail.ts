@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer")
 
-const sendEmail = async (email: string, generatedOTP: number):Promise<void> => {
+const sendEmail = async (email: string, generatedOTP: number): Promise<void> => {
     try {
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",

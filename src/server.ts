@@ -18,7 +18,6 @@ import userRoutes from "./routes/userRoutes"
 import messageRoutes from "./routes/messageRoutes"
 import gameRoutes from "./routes/gameRoutes"
 
-
 import { notFound, errorHandler } from "./middlewares/errorHandler"
 require("./config/googleAuth")
 
@@ -110,11 +109,10 @@ io.on("connection", (socket: any) => {
         socket.to(args.roomId).emit("opponentJoined", roomUpdate)
     })
 
-    socket.on('move', (data:any) => {
+    socket.on("move", (data: any) => {
         // emit to all sockets in the room except the emitting socket.
-        socket.to(data.room).emit('move', data.move);
-      });
-    
+        socket.to(data.room).emit("move", data.move)
+    })
 })
 
 app.use(morgan("dev"))
@@ -146,7 +144,7 @@ app.use(passport.session())
 app.use("/api/auth", authRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/game", gameRoutes)
-app.use("/api/messages", messageRoutes);
+app.use("/api/messages", messageRoutes)
 
 app.get("/", (req, res) => res.send("Server is ready"))
 

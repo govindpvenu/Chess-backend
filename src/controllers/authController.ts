@@ -5,8 +5,6 @@ import generateToken from "../utils/generateToken"
 import generateOTP from "../utils/generateOTP"
 import sendEmail from "../utils/sendEmail"
 
-
-
 //*@route POST /api/user/register
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
     const { username, email, password } = req.body
@@ -35,6 +33,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
     await sendEmail(email, generatedOTP)
     res.status(200).json({
+        _id: user._id,
         username: username,
         email: email,
         verified: false,
@@ -49,6 +48,7 @@ const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     const user = await User.findOne({ email: req.body.email })
 
     res.status(200).json({
+        _id: user?._id,
         username: user?.username,
         email: user?.email,
         profile: user?.profile,
@@ -64,6 +64,7 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
     if (user && (await user.matchPassword(password))) {
         generateToken(res, user._id.toString(), "user")
         res.status(201).json({
+            _id: user?._id,
             username: user?.username,
             email: user?.email,
             profile: user?.profile,
@@ -97,6 +98,7 @@ const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
     const generatedOTP = generateOTP()
     await sendEmail(email, generatedOTP)
     res.status(200).json({
+        _id: user?._id,
         username: user?.username,
         email: user?.email,
         otp: generatedOTP,
@@ -120,6 +122,7 @@ const resetPassword = asyncHandler(async (req: Request, res: Response) => {
     console.log(updatedUser)
 
     res.status(200).json({
+        _id: user?._id,
         username: user?.username,
         email: user?.email,
     })
@@ -134,6 +137,7 @@ const resendOtp = asyncHandler(async (req: Request, res: Response) => {
 
     await sendEmail(email, generatedOTP)
     res.status(200).json({
+        _id: user?._id,
         username: user?.username,
         email: user?.email,
         otp: generatedOTP,
@@ -156,8 +160,6 @@ const googleLogout = asyncHandler((req: Request, res: Response) => {
         res.redirect("http://localhost:3000/login")
     })
 })
-
-
 
 export { registerUser, authUser, verifyOtp, logoutUser, forgotPassword, resetPassword, resendOtp, googleLogout, googleSuccess }
 

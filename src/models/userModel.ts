@@ -44,9 +44,9 @@ const userSchema = new Schema<UserDocument>(
                 message: "Password must have at least 8 characters",
             },
         },
-        profile:{
+        profile: {
             type: String,
-            default: ""
+            default: "",
         },
         verified: {
             type: Boolean,
@@ -68,7 +68,6 @@ const userSchema = new Schema<UserDocument>(
             type: Number,
             default: 0,
         },
-
     },
     {
         timestamps: true,

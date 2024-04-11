@@ -10,8 +10,8 @@ const sendMessage = asyncHandler(async (req, res) => {
         const { message } = req.body
         console.log(req.body)
         const { id: receiverId } = req.params
-        const senderId = (req.user as any)._id;
-        console.log(receiverId,senderId)
+        const senderId = (req.user as any)._id
+        console.log(receiverId, senderId)
 
         let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
@@ -51,19 +51,20 @@ const sendMessage = asyncHandler(async (req, res) => {
 })
 
 //*@route GET /api/user/get-users
-const getMessages = async (req:Request, res:Response) => {
+const getMessages = async (req: Request, res: Response) => {
     try {
         const { id: userToChatId } = req.params
-        const senderId = (req.user as any)._id;
+        const senderId = (req.user as any)._id
+        console.log(senderId, userToChatId)
 
         const conversation = await Conversation.findOne({
             participants: { $all: [senderId, userToChatId] },
         }).populate("messages") // NOT REFERENCE BUT ACTUAL MESSAGES(return array of messages)
-
+        console.log({ conversation })
         if (!conversation) return res.status(200).json([])
 
         const messages = conversation.messages
-
+        console.log({ messages })
         res.status(200).json(messages)
     } catch (error: any) {
         console.log("Error in getMessages controller: ", error.message)

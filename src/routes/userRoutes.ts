@@ -7,5 +7,4 @@ const router = express.Router()
 router.get("/get-all-users", protect, getUsersForRanking)
 router.get("/get-other-users", protect, getUsersForSidebar)
 
-
 export default router
