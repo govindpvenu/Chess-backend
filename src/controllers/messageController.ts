@@ -2,9 +2,9 @@ import asyncHandler from "express-async-handler"
 import { Request, Response, json } from "express"
 import Message from "../models/messageModel"
 import Conversation from "../models/conversationModel"
-// import { getReceiverSocketId, io } from "../socket/socket.js";
+import { getReceiverSocketId, io } from "../server"
 
-//*@route GET /api/user/get-users
+//*@route POST /api/messages/send/:id
 const sendMessage = asyncHandler(async (req, res) => {
     try {
         const { message } = req.body
@@ -37,11 +37,13 @@ const sendMessage = asyncHandler(async (req, res) => {
         await Promise.all([conversation.save(), newMessage.save()])
 
         // SOCKET IO FUNCTIONALITY WILL GO HERE
-        // const receiverSocketId = getReceiverSocketId(receiverId)
-        // if (receiverSocketId) {
-        // io.to(<socket_id>).emit() used to send events to specific client
-        //     io.to(receiverSocketId).emit("newMessage", newMessage)
-        // }
+        const receiverSocketId = getReceiverSocketId(receiverId)
+        if (receiverSocketId) {
+            console.log("reveiving:",receiverSocketId)
+
+            // io.to(<socket_id>).emit() used to send events to specific client
+            io.to(receiverSocketId).emit("newMessage", newMessage)
+        }
 
         res.status(201).json(newMessage)
     } catch (error: any) {
@@ -50,7 +52,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     }
 })
 
-//*@route GET /api/user/get-users
+//*@route GET /api/messages/:id
 const getMessages = async (req: Request, res: Response) => {
     try {
         const { id: userToChatId } = req.params

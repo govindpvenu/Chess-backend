@@ -5,7 +5,7 @@ import generateToken from "../utils/generateToken"
 import generateOTP from "../utils/generateOTP"
 import sendEmail from "../utils/sendEmail"
 
-//*@route POST /api/user/register
+//*@route POST /api/auth/register
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
     const { username, email, password } = req.body
 
@@ -42,41 +42,59 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
-//*@route PATCH /api/user/verify-otp
+//*@route PATCH /api/auth/verify-otp
 const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     await User.updateOne({ email: req.body.email }, { verified: true })
     const user = await User.findOne({ email: req.body.email })
 
+    res.status(200).json(
+        user
+        // _id: user?._id,
+        // username: user?.username,
+        // email: user?.email,
+        // profile: user?.profile,
+        // verified: user?.verified,
+    )
+})
+
+//*@route POST /api/auth/resend-otp
+const resendOtp = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body
+
+    const user = await User.findOne({ email })
+    const generatedOTP = generateOTP()
+
+    await sendEmail(email, generatedOTP)
     res.status(200).json({
         _id: user?._id,
         username: user?.username,
         email: user?.email,
-        profile: user?.profile,
-        verified: user?.verified,
+        otp: generatedOTP,
     })
 })
 
-//*@route POST /api/user/login
+//*@route POST /api/auth/login
 const authUser = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body
     const user = await User.findOne({ email })
 
     if (user && (await user.matchPassword(password))) {
         generateToken(res, user._id.toString(), "user")
-        res.status(201).json({
-            _id: user?._id,
-            username: user?.username,
-            email: user?.email,
-            profile: user?.profile,
-            verified: user?.verified,
-        })
+        res.status(201).json(
+            user
+            // _id: user?._id,
+            // username: user?.username,
+            // email: user?.email,
+            // profile: user?.profile,
+            // verified: user?.verified,
+        )
     } else {
         res.status(401)
         throw new Error("Invalid email or password")
     }
 })
 
-//*@route POST /api/user/logout
+//*@route POST /api/auth/logout
 const logoutUser = asyncHandler(async (req, res) => {
     res.cookie("user", "", {
         httpOnly: true,
@@ -85,7 +103,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "User logged out" })
 })
 
-//*@route POST /api/user/forget-password
+//*@route POST /api/auth/forget-password
 const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.body
     const user = await User.findOne({ email })
@@ -105,7 +123,7 @@ const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
-//*@route PATCH /api/user/reset-password
+//*@route PATCH /api/auth/auth/reset-password
 const resetPassword = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body
     console.log(email, password)
@@ -128,23 +146,7 @@ const resetPassword = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
-//*@route POST /api/user/resend-otp
-const resendOtp = asyncHandler(async (req: Request, res: Response) => {
-    const { email } = req.body
-
-    const user = await User.findOne({ email })
-    const generatedOTP = generateOTP()
-
-    await sendEmail(email, generatedOTP)
-    res.status(200).json({
-        _id: user?._id,
-        username: user?.username,
-        email: user?.email,
-        otp: generatedOTP,
-    })
-})
-
-//*@route GET /api/user/auth/login/success
+//*@route GET /api/auth/auth/login/success
 const googleSuccess = asyncHandler((req: Request, res: Response) => {
     const user: any = req.user
     if (user) {
@@ -153,7 +155,7 @@ const googleSuccess = asyncHandler((req: Request, res: Response) => {
     }
 })
 
-//*@route GET /api/user/auth/google/logout
+//*@route GET /api/auth/auth/google/logout
 const googleLogout = asyncHandler((req: Request, res: Response) => {
     req.logout((err) => {
         if (err) return res.status(500).send("Logout failed")
@@ -162,6 +164,24 @@ const googleLogout = asyncHandler((req: Request, res: Response) => {
 })
 
 export { registerUser, authUser, verifyOtp, logoutUser, forgotPassword, resetPassword, resendOtp, googleLogout, googleSuccess }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //*@route POST /api
 //?@route POST /api

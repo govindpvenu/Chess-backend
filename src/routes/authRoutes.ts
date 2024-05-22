@@ -1,6 +1,5 @@
 import express from "express"
 import { registerUser, authUser, verifyOtp, logoutUser, forgotPassword, resetPassword, resendOtp, googleLogout, googleSuccess } from "../controllers/authController"
-import { protect } from "../middlewares/passportAuth"
 import passport from "passport"
 
 const router = express.Router()

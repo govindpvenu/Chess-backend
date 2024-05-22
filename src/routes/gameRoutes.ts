@@ -4,6 +4,6 @@ import { protect } from "../middlewares/passportAuth"
 
 const router = express.Router()
 
-router.patch("/update-wins", updateWins)
+router.patch("/update-wins", protect,updateWins)
 
 export default router

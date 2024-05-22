@@ -25,6 +25,7 @@ connectDB()
 const app = express()
 
 const server = http.createServer(app)
+
 // upgrade http server to websocket server
 const io = new Server(server, {
     cors: "*", // allow connection from any origin
@@ -115,6 +116,35 @@ io.on("connection", (socket: any) => {
     })
 })
 
+
+
+
+interface UserSocketMap {
+    [userId: string]: string;
+}
+
+const userSocketMap: UserSocketMap = {};
+
+export const getReceiverSocketId = (receiverId: string): string | undefined => {
+    return userSocketMap[receiverId];
+};
+
+io.on("connection", (socket: any) => {
+    console.log("a user connected", socket.id);
+
+    const userId = socket.handshake.query.userId as string;
+    if (userId !== "undefined") userSocketMap[userId] = socket.id;
+
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    socket.on("disconnect", () => {
+        console.log("user disconnected", socket.id);
+        delete userSocketMap[userId];
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    });
+});
+
+
 app.use(morgan("dev"))
 app.use(cors())
 app.use(cookieParser())
@@ -130,6 +160,7 @@ app.use(
         },
     })
 )
+
 app.use(
     cors({
         origin: "http://localhost:3000",
@@ -153,3 +184,4 @@ app.use(errorHandler)
 
 const port = env.PORT || 5000
 server.listen(port, () => console.log(`Server started on port ${port}`))
+export { io };

@@ -6,6 +6,7 @@ interface UserDocument extends Document {
     googleId?: string
     username: string
     email: string
+    bio: string
     password: string
     profile?: string
     verified?: boolean
@@ -43,6 +44,11 @@ const userSchema = new Schema<UserDocument>(
                 validator: (value: string) => value.length >= 8,
                 message: "Password must have at least 8 characters",
             },
+        },
+        bio: {
+            type: String,
+            default:"No bio added",
+
         },
         profile: {
             type: String,
