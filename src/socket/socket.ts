@@ -1,40 +1,62 @@
-// import { Server as SocketServer, Socket } from "socket.io";
-// import http from "http";
-// import express, { Request, Response } from "express";
+import { io } from "../server"
+const { v4: uuidV4 } = require("uuid")
 
-// const app = express();
+const rooms = new Map()
 
-// const server = http.createServer(app);
-// const io = new SocketServer(server, {
-//     cors: {
-//         origin: ["http://localhost:8901"],
-//         methods: ["GET", "POST"],
-//     },
-// });
+//socket io stuffs
+io.on("connection", (socket: any) => {
+    socket.on("username", (username: any) => {
+        socket.data.username = username
+    })
 
-// interface UserSocketMap {
-//     [userId: string]: string;
-// }
+    socket.on("createRoom", async (callback: any) => {
+        const roomId = uuidV4()
+        await socket.join(roomId)
 
-// const userSocketMap: UserSocketMap = {};
+        rooms.set(roomId, {
+            roomId,
+            players: [{ id: socket.id, username: socket.data?.username }],
+        })
 
-// export const getReceiverSocketId = (receiverId: string): string | undefined => {
-//     return userSocketMap[receiverId];
-// };
+        callback(roomId)
+    })
 
-// io.on("connection", (socket: Socket) => {
-//     console.log("a user connected", socket.id);
+    socket.on("joinRoom", async (args: any, callback: any) => {
+        const room = rooms.get(args.roomId)
 
-//     const userId = socket.handshake.query.userId as string;
-//     if (userId !== "undefined") userSocketMap[userId] = socket.id;
+        let error, message
+        if (!room) {
+            error = true
+            message = "room does not exist"
+        } else if (room.length <= 0) {
+            error = true
+            message = "room is empty"
+        } else if (room.length >= 2) {
+            error = true
+            message = "room is full"
+        }
+        if (error) {
+            if (callback) {
+                callback({ error, message })
+            }
+            return
+        }
 
-//     io.emit("getOnlineUsers", Object.keys(userSocketMap));
+        await socket.join(args.roomId)
 
-//     socket.on("disconnect", () => {
-//         console.log("user disconnected", socket.id);
-//         delete userSocketMap[userId];
-//         io.emit("getOnlineUsers", Object.keys(userSocketMap));
-//     });
-// });
+        const roomData = {
+            ...room,
+            players: [...room.players, { id: socket.id, username: socket.data?.username }],
+        }
 
-// export { app, io, server };
+        rooms.set(args.roomId, roomData)
+
+        callback(roomData)
+
+        socket.to(args.roomId).emit("opponentJoined", roomData)
+    })
+
+    socket.on("move", (data: any) => {
+        socket.to(data.room).emit("move", data.move)
+    })
+})

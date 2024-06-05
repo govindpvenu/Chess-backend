@@ -22,6 +22,7 @@ const getUsersForSidebar = async (req: Request, res: Response) => {
     }
 }
 
+
 //*@route PATCH /api/user/update-user
 const updateUser = asyncHandler(async (req: Request, res: Response) => {
     const loggedInUserId = (req.user as any)._id
@@ -30,4 +31,6 @@ const updateUser = asyncHandler(async (req: Request, res: Response) => {
     console.log(user)
     res.status(200).json(user)
 })
+
+
 export { getUsersForRanking, getUsersForSidebar, updateUser }

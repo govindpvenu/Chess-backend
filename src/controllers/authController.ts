@@ -28,7 +28,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
     }
 
     generateToken(res, user._id.toString(), "user")
-
+    
     const generatedOTP = generateOTP()
 
     await sendEmail(email, generatedOTP)
